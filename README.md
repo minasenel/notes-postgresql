@@ -1,6 +1,6 @@
 # Notes Project
 
-A simple Flask web application for managing notes with PostgreSQL database.
+This is a Flask web application for managing notes with PostgreSQL database.
 
 ## Features
 
