@@ -27,14 +27,40 @@ cur = conn.cursor()
 def index():
     # Kullanıcı oturumuna göre notları çek
     if "user_id" in session:
-        cur.execute(
-            "SELECT id, title, content, created_at, pinned FROM notes WHERE user_id = %s ORDER BY pinned DESC, created_at DESC;",
-            (session["user_id"],)
-        )
+        notebook_filter = request.args.get("notebook")
+        # Not defterlerini getir
+        cur.execute("SELECT id, name FROM notebooks WHERE user_id = %s ORDER BY name ASC;", (session["user_id"],))
+        notebooks = cur.fetchall()
+        # Notları getir (notebook filtresi varsa uygula)
+        if notebook_filter:
+            cur.execute(
+                """
+                SELECT n.id, n.title, n.content, n.created_at, n.pinned,
+                       nb.id AS notebook_id, nb.name AS notebook_name
+                FROM notes n
+                LEFT JOIN notebooks nb ON nb.id = n.notebook_id
+                WHERE n.user_id = %s AND n.notebook_id = %s
+                ORDER BY n.pinned DESC, n.created_at DESC;
+                """,
+                (session["user_id"], notebook_filter)
+            )
+        else:
+            cur.execute(
+                """
+                SELECT n.id, n.title, n.content, n.created_at, n.pinned,
+                       nb.id AS notebook_id, nb.name AS notebook_name
+                FROM notes n
+                LEFT JOIN notebooks nb ON nb.id = n.notebook_id
+                WHERE n.user_id = %s
+                ORDER BY n.pinned DESC, n.created_at DESC;
+                """,
+                (session["user_id"],)
+            )
         notes = cur.fetchall()
     else:
         notes = []
-    return render_template("index.html", notes=notes)
+        notebooks = []
+    return render_template("index.html", notes=notes, notebooks=notebooks)
 
 @app.post("/notes")
 def create_note():
@@ -42,9 +68,11 @@ def create_note():
         return redirect("/login")
     title = request.form["title"] #burada title ve content formlarından gelen verileri alıyoruz.
     content = request.form["content"]
+    notebook_id_raw = request.form.get("notebook_id")
+    notebook_id = int(notebook_id_raw) if notebook_id_raw else None
     cur.execute(
-        "INSERT INTO notes (title, content, user_id) VALUES (%s, %s, %s)", #burada notes tablosuna title, content ve user_id verilerini ekliyoruz.
-        (title, content, session["user_id"])
+        "INSERT INTO notes (title, content, user_id, notebook_id) VALUES (%s, %s, %s, %s)", #burada notes tablosuna title, content, user_id ve notebook_id verilerini ekliyoruz.
+        (title, content, session["user_id"], notebook_id)
     )
     conn.commit()
     return redirect("/")
@@ -63,7 +91,9 @@ def update_note(note_id: int):
         return redirect("/login")
     title = request.form["title"]
     content = request.form["content"]
-    cur.execute("UPDATE notes SET title = %s, content = %s WHERE id = %s AND user_id = %s", (title, content, note_id, session["user_id"])) #burada sadece kendi notunu güncellemesine izin veriyoruz.
+    notebook_id_raw = request.form.get("notebook_id")
+    notebook_id = int(notebook_id_raw) if notebook_id_raw else None
+    cur.execute("UPDATE notes SET title = %s, content = %s, notebook_id = %s WHERE id = %s AND user_id = %s", (title, content, notebook_id, note_id, session["user_id"])) #burada sadece kendi notunu güncellemesine izin veriyoruz.
     conn.commit()
     return redirect("/")
 
@@ -76,6 +106,27 @@ def toggle_pin(note_id: int):
         "UPDATE notes SET pinned = NOT COALESCE(pinned, FALSE) WHERE id = %s AND user_id = %s",
         (note_id, session["user_id"]) 
     )
+    conn.commit()
+    return redirect("/")
+
+# Notebooks CRUD (simple create/delete + list via index)
+@app.post("/notebooks")
+def create_notebook():
+    if "user_id" not in session:
+        return redirect("/login")
+    name = request.form["name"].strip()
+    if not name:
+        return redirect("/")
+    cur.execute("INSERT INTO notebooks (name, user_id) VALUES (%s, %s)", (name, session["user_id"]))
+    conn.commit()
+    return redirect("/")
+
+@app.post("/notebooks/<int:notebook_id>/delete")
+def delete_notebook(notebook_id: int):
+    if "user_id" not in session:
+        return redirect("/login")
+    # Not defteri sadece sahibince silinebilir
+    cur.execute("DELETE FROM notebooks WHERE id = %s AND user_id = %s", (notebook_id, session["user_id"]))
     conn.commit()
     return redirect("/")
 

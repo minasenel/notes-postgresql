@@ -24,6 +24,31 @@
             </div>
         </div>
 
+        <!-- Notebooks section -->
+        {% if session.username %}
+        <div class="create-card" style="margin-bottom:20px;">
+            <h3>Not Defterleri</h3>
+            <div style="margin-bottom:10px;">
+                {% if notebooks and notebooks|length > 0 %}
+                    {% for nb in notebooks %}
+                        <a href="/?notebook={{ nb[0] }}" style="margin-right:10px;">📁 {{ nb[1] }}</a>
+                        <form method="POST" action="/notebooks/{{ nb[0] }}/delete" style="display:inline;">
+                            <button type="submit">Sil</button>
+                        </form>
+                        <br>
+                    {% endfor %}
+                    <a href="/">Tüm notlar</a>
+                {% else %}
+                    <em>Henüz not defteri yok.</em>
+                {% endif %}
+            </div>
+            <form method="POST" action="/notebooks">
+                <input type="text" name="name" placeholder="Yeni not defteri adı" required>
+                <button type="submit">Ekle</button>
+            </form>
+        </div>
+        {% endif %}
+
         <!-- Create card -->
         {% if session.username %}
         <div class="create-card">
@@ -32,6 +57,16 @@
                 <br><br>
                 <textarea name="content" placeholder="İçerik" required></textarea>
                 <br>
+                {% if notebooks and notebooks|length > 0 %}
+                <label for="notebook_id">Not defteri:</label>
+                <select name="notebook_id" id="notebook_id">
+                    <option value="">(Seçilmedi)</option>
+                    {% for nb in notebooks %}
+                        <option value="{{ nb[0] }}">{{ nb[1] }}</option>
+                    {% endfor %}
+                </select>
+                <br><br>
+                {% endif %}
                 <button type="submit">Kaydet</button>
             </form>
         </div>
@@ -49,7 +84,7 @@
                     {{ note[1] }}
                 </h3>
                 <p>{{ note[2] }}</p>
-                <small>{{ note[3] }}</small>
+                <small>{{ note[3] }}{% if note[6] %} · 📁 {{ note[6] }}{% endif %}</small>
                 {% if session.username %}
                 <div class="card-actions">
                     <form method="POST" action="/notes/{{ note[0] }}/pin">
@@ -64,6 +99,16 @@
                     <br><br>
                     <textarea name="content" required>{{ note[2] }}</textarea>
                     <br>
+                    {% if notebooks and notebooks|length > 0 %}
+                    <label for="notebook_id_{{ note[0] }}">Not defteri:</label>
+                    <select name="notebook_id" id="notebook_id_{{ note[0] }}">
+                        <option value="">(Seçilmedi)</option>
+                        {% for nb in notebooks %}
+                            <option value="{{ nb[0] }}" {% if note[5] == nb[0] %}selected{% endif %}>{{ nb[1] }}</option>
+                        {% endfor %}
+                    </select>
+                    <br><br>
+                    {% endif %}
                     <button type="submit">Güncelle</button>
                 </form>
                 {% endif %}
