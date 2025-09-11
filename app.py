@@ -18,22 +18,37 @@ conn = psycopg2.connect(
 )
 cur = conn.cursor()
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/", methods=["GET"]) # Burada index fonksiyonu oluşturuldu.
 def index():
-    if request.method == "POST":
-        title = request.form["title"]
-        content = request.form["content"]
-        cur.execute(
-            "INSERT INTO notes (title, content) VALUES (%s, %s)",
-            (title, content)
-        )
-        conn.commit()
-        return redirect("/")
-
     # Tüm notları çek
     cur.execute("SELECT id, title, content, created_at FROM notes ORDER BY created_at DESC;")
     notes = cur.fetchall()
     return render_template("index.html", notes=notes)
+
+@app.post("/notes")
+def create_note():
+    title = request.form["title"] #burada title ve content formlarından gelen verileri alıyoruz.
+    content = request.form["content"]
+    cur.execute(
+        "INSERT INTO notes (title, content) VALUES (%s, %s)", #burada notes tablosuna title ve content verilerini ekliyoruz.
+        (title, content)
+    )
+    conn.commit()
+    return redirect("/")
+
+@app.post("/notes/<int:note_id>/delete")
+def delete_note(note_id: int):
+    cur.execute("DELETE FROM notes WHERE id = %s", (note_id,)) #burada notes tablosundan seçilen notu siliyoruz.
+    conn.commit()
+    return redirect("/")
+
+@app.post("/notes/<int:note_id>/update")
+def update_note(note_id: int):
+    title = request.form["title"]
+    content = request.form["content"]
+    cur.execute("UPDATE notes SET title = %s, content = %s WHERE id = %s", (title, content, note_id)) #burada notes tablosundaki seçilen notun title ve content verilerini güncelliyoruz.
+    conn.commit()
+    return redirect("/")
 
 if __name__ == "__main__":
     app.run(debug=True)
