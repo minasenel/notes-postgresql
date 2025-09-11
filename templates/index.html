@@ -6,41 +6,70 @@
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>Notes App Çalışıyor </h1>
-    <p>Bu sayfa çalışıyorsa Flask server ve templates doğru bağlanmış demektir.</p>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Notes</h1>
+            <div class="actions">
+                {% if session.username %}
+                    <span>Merhaba, <strong>{{ session.username }}</strong></span>
+                    <form method="POST" action="/logout" style="display:inline; margin-left:8px;">
+                        <button type="submit">Çıkış</button>
+                    </form>
+                {% else %}
+                    <a href="/login">Giriş</a>
+                    <span> | </span>
+                    <a href="/register">Kayıt ol</a>
+                {% endif %}
+            </div>
+        </div>
 
-    <!-- Add Note Form -->
-    <form method="POST" action="/notes">
-        <input type="text" name="title" placeholder="Başlık" required>
-        <br><br>
-        <textarea name="content" placeholder="İçerik" required></textarea>
-        <br><br>
-        <button type="submit">Kaydet</button>
-    </form>
+        <!-- Create card -->
+        {% if session.username %}
+        <div class="create-card">
+            <form method="POST" action="/notes">
+                <input type="text" name="title" placeholder="Başlık" required>
+                <br><br>
+                <textarea name="content" placeholder="İçerik" required></textarea>
+                <br>
+                <button type="submit">Kaydet</button>
+            </form>
+        </div>
+        {% else %}
+        <p>Not eklemek için <a href="/login">giriş yapın</a> veya <a href="/register">kayıt olun</a>.</p>
+        {% endif %}
 
-    <!-- Notes List -->
-    <h2>Notlar</h2>
-    <ul>
-        {% for note in notes %}
-            <li>
-                <strong>{{ note[1] }}</strong> — {{ note[2] }}
-                <br><small>{{ note[3] }}</small>
-
-                <!-- Delete Note -->
-                <form method="POST" action="/notes/{{ note[0] }}/delete" style="margin-top:8px;">
-                    <button type="submit">Sil</button>
-                </form>
-
-                <!-- Update Note -->
+        <!-- Notes Grid -->
+        <h2>Notlar</h2>
+        <div class="grid">
+            {% for note in notes %}
+            <div class="card">
+                <h3>
+                    {% if note[4] %}📌 {% endif %}
+                    {{ note[1] }}
+                </h3>
+                <p>{{ note[2] }}</p>
+                <small>{{ note[3] }}</small>
+                {% if session.username %}
+                <div class="card-actions">
+                    <form method="POST" action="/notes/{{ note[0] }}/pin">
+                        <button type="submit">{% if note[4] %}Kaldır{% else %}Sabitle{% endif %}</button>
+                    </form>
+                    <form method="POST" action="/notes/{{ note[0] }}/delete">
+                        <button type="submit">Sil</button>
+                    </form>
+                </div>
                 <form method="POST" action="/notes/{{ note[0] }}/update" style="margin-top:8px;">
                     <input type="text" name="title" value="{{ note[1] }}" required>
                     <br><br>
                     <textarea name="content" required>{{ note[2] }}</textarea>
-                    <br><br>
+                    <br>
                     <button type="submit">Güncelle</button>
                 </form>
-            </li>
-        {% endfor %}
-    </ul>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
 </body>
 </html>

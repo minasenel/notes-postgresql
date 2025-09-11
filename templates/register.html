@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        form { max-width: 420px; margin: 40px auto; display: block; }
+        input { width: 100%; padding: 8px; margin: 8px 0; }
+        button { padding: 8px 14px; }
+        .back { display:inline-block; margin: 12px auto; }
+    </style>
+    </head>
+<body>
+    <h1>Kayıt Ol</h1>
+    <form method="POST" action="/register">
+        <input type="text" name="username" placeholder="Kullanıcı adı" required>
+        <input type="password" name="password" placeholder="Şifre" required>
+        <button type="submit">Kayıt Ol</button>
+    </form>
+    <a class="back" href="/login">Giriş yap</a>
+</body>
+</html>
+
