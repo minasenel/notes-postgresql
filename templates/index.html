@@ -71,5 +71,18 @@
             {% endfor %}
         </div>
     </div>
+    <!-- Confirm Modal -->
+    <div id="confirm-modal" class="modal-overlay" aria-hidden="true">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+            <h4 id="confirm-title">Silinsin mi?</h4>
+            <p>Bu işlemi geri alamazsınız.</p>
+            <div class="row">
+                <button type="button" class="btn btn-secondary" data-dismiss>Vazgeç</button>
+                <button type="button" class="btn btn-primary" data-confirm>Sil</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
 </body>
 </html>

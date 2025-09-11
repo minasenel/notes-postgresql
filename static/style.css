@@ -32,7 +32,7 @@ body {
 
 /* Create form */
 .create-card {
-  background: #fff;
+  background: #ffffff;
   border: 1px solid rgba(0,0,0,0.08);
   border-radius: 10px;
   padding: 16px;
@@ -57,7 +57,7 @@ body {
   border-radius: 8px;
   border: 1px solid transparent;
   background: #1f3158;
-  color: #fff;
+  color: #ffffff7b;
   cursor: pointer;
 }
 
@@ -68,14 +68,14 @@ body {
   gap: 16px;
 }
 
-.card {
+.card { /*burada card stilini ayarlıyoruz.*/
   background: #fff;
   border: 1px solid rgba(0,0,0,0.08);
   border-radius: 12px;
   padding: 14px;
   box-shadow: 0 1px 2px rgba(0,0,0,0.06);
 }
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) { /*burada dark mode için stil ayarları yapıyoruz.*/
   .card { background: #161a22; border-color: rgba(255,255,255,0.1); }
 }
 .card h3 { margin: 0 0 8px; font-size: 18px; }
@@ -100,4 +100,37 @@ body {
   color: #fff;
   cursor: pointer;
 }
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal-overlay.show { display: flex; }
+.modal {
+  background: #fff;
+  color: #111;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.1);
+  width: 90%;
+  max-width: 420px;
+  padding: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+@media (prefers-color-scheme: dark) {
+  .modal { background: #161a22; color: #eaeaea; border-color: rgba(255,255,255,0.1); }
+}
+.modal h4 { margin: 0 0 8px; }
+.modal p { margin: 0 0 16px; }
+.modal .row { display: flex; gap: 8px; justify-content: flex-end; }
+.btn {
+  padding: 8px 12px; border-radius: 8px; border: 1px solid transparent; cursor: pointer;
+}
+.btn-secondary { background: #e5e7eb; color: #111; }
+.btn-primary { background: #1f3158; color: #fff; }
 
