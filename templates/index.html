@@ -31,7 +31,7 @@
             <div style="margin-bottom:10px;">
                 {% if notebooks and notebooks|length > 0 %}
                     {% for nb in notebooks %}
-                        <a href="/?notebook={{ nb[0] }}" style="margin-right:10px;">📁 {{ nb[1] }}</a>
+                        <a href="/notebook/{{ nb[0] }}" style="margin-right:10px;">📁 {{ nb[1] }}</a>
                         <form method="POST" action="/notebooks/{{ nb[0] }}/delete" style="display:inline;">
                             <button type="submit">Sil</button>
                         </form>

@@ -97,6 +97,26 @@ def update_note(note_id: int):
     conn.commit()
     return redirect("/")
 
+
+#add a new function to see what notes are inside a notebook
+@app.route("/notebook/<int:notebook_id>", methods=["GET"])
+def notebook_notes(notebook_id: int):
+    if "user_id" not in session:
+        return redirect("/login")
+    # current notebook (ensure ownership)
+    cur.execute("SELECT id, name FROM notebooks WHERE id = %s AND user_id = %s", (notebook_id, session["user_id"]))
+    notebook = cur.fetchone()
+    if not notebook:
+        return redirect("/")
+    # list notes in this notebook
+    cur.execute("SELECT id, title, content, created_at FROM notes WHERE notebook_id = %s AND user_id = %s ORDER BY created_at DESC", (notebook_id, session["user_id"]))
+    notes = cur.fetchall()
+    # all notebooks for selector
+    cur.execute("SELECT id, name FROM notebooks WHERE user_id = %s ORDER BY name ASC", (session["user_id"],))
+    notebooks = cur.fetchall()
+    return render_template("notebook_notes.html", notes=notes, notebooks=notebooks, current_notebook_id=notebook[0], current_notebook_name=notebook[1])
+
+
 @app.post("/notes/<int:note_id>/pin")
 def toggle_pin(note_id: int):
     if "user_id" not in session:
