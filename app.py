@@ -1,10 +1,10 @@
 from flask import Flask, render_template, request, redirect, session, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 import psycopg2
-import psycopg2.errors #burada psycopg2.errors modülünü import ediyoruz.
+import psycopg2.errors #burada psycopg2.errors modülünü import ediyoruz. bu modül unique violation hatasını yakalamak için kullanılır. unique violation hatası kullanıcı adının tekrar edilmesi hatasıdır.
 import os
 from dotenv import load_dotenv
-from ai_service import summarize_note
+from ai_service import summarize_note #burada ai_service.py dosyasından summarize_note fonksiyonunu import ediyoruz. bu fonksiyon notları özetlemek için kullanılır.
 
 # Environment variables'ları yükle
 load_dotenv()
@@ -14,7 +14,7 @@ app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "dev-secret-key") #burada session management secret'ı ayarlıyoruz. . env dosyasında SECRET_KEY olarak ayarladık.
 
 
-# PostgreSQL bağlantısı - environment variables kullanarak
+# PostgreSQL bağlantısı - environment variables kullanarak burada postgresql bağlantısı yapıyoruz.
 conn = psycopg2.connect(
     dbname=os.getenv("DB_NAME", "mydb"),
     user=os.getenv("DB_USER", "myuser"),
@@ -24,7 +24,7 @@ conn = psycopg2.connect(
 )
 cur = conn.cursor()
 
-@app.route("/", methods=["GET"]) # Burada index fonksiyonu oluşturuldu.
+@app.route("/", methods=["GET"]) # Burada index fonksiyonu oluşturuldu. bu fonksiyon ana sayfayı görüntülemek için kullanılır.
 def index():
     # Kullanıcı oturumuna göre notları çek
     if "user_id" in session:
@@ -34,7 +34,7 @@ def index():
         notebooks = cur.fetchall()
         # Notları getir (notebook filtresi varsa uygula)
         if notebook_filter:
-            cur.execute(
+            cur.execute( #burada notebook filtresi varsa uygulanır.
                 """
                 SELECT n.id, n.title, n.content, n.created_at, n.pinned,
                        nb.id AS notebook_id, nb.name AS notebook_name
@@ -46,7 +46,7 @@ def index():
                 (session["user_id"], notebook_filter)
             )
         else:
-            cur.execute(
+            cur.execute( #burada notebook filtresi yoksa tüm notları çeker.
                 """
                 SELECT n.id, n.title, n.content, n.created_at, n.pinned,
                        nb.id AS notebook_id, nb.name AS notebook_name
@@ -104,7 +104,7 @@ def update_note(note_id: int):
 def notebook_notes(notebook_id: int):
     if "user_id" not in session:
         return redirect("/login")
-    # current notebook (ensure ownership)
+    # current notebook 
     cur.execute("SELECT id, name FROM notebooks WHERE id = %s AND user_id = %s", (notebook_id, session["user_id"]))
     notebook = cur.fetchone()
     if not notebook:
@@ -112,7 +112,7 @@ def notebook_notes(notebook_id: int):
     # list notes in this notebook
     cur.execute("SELECT id, title, content, created_at FROM notes WHERE notebook_id = %s AND user_id = %s ORDER BY created_at DESC", (notebook_id, session["user_id"]))
     notes = cur.fetchall()
-    # all notebooks for selector
+    # all notebooks 
     cur.execute("SELECT id, name FROM notebooks WHERE user_id = %s ORDER BY name ASC", (session["user_id"],))
     notebooks = cur.fetchall()
     return render_template("notebook_notes.html", notes=notes, notebooks=notebooks, current_notebook_id=notebook[0], current_notebook_name=notebook[1])

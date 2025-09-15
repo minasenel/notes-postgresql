@@ -18,13 +18,13 @@ def summarize_note(content, max_words=100):
         genai.configure(api_key=api_key)
         model = genai.GenerativeModel('gemini-1.5-flash')
         
-        # Create prompt for summarization
+        # Create prompt for summarization 
         prompt = f"""Summarize the following text in exactly {max_words} words or less. 
         Be concise and capture the main points. Return only the summary, no additional text:
 
         {content}"""
         
-        # Generate summary
+        # Generate summary : burada notları özetlemek için gemini api kullanıyoruz.
         response = model.generate_content(prompt)
         return response.text.strip()
         
@@ -45,4 +45,4 @@ def test_gemini_connection():
         response = model.generate_content("Hello, this is a test.")
         return True, "Connection successful"
     except Exception as e:
-        return False, f"Connection failed: {str(e)}"
+        return False, f"Connection failed: {str(e)}" #burada gemini api bağlantısı başarısız olduğunda hata mesajı görüntülenir.
