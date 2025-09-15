@@ -3,6 +3,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const overlay = document.getElementById('confirm-modal');
   const btnDismiss = overlay?.querySelector('[data-dismiss]');
   const btnConfirm = overlay?.querySelector('[data-confirm]');
+  const confirmTitleEl = overlay?.querySelector('#confirm-title');
+  const confirmTextEl = overlay?.querySelector('.modal p');
+  const defaultConfirmTitle = confirmTitleEl?.textContent || 'Silinsin mi?';
+  const defaultConfirmText = confirmTextEl?.textContent || 'Bu işlemi geri alamazsınız.';
   let pendingForm = null;
 
   // Open modal : burada modalı açmak için kullanılır.
@@ -21,6 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('form[action$="/delete"]').forEach((form) => {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
+      if (confirmTitleEl) confirmTitleEl.textContent = defaultConfirmTitle;
+      if (confirmTextEl) confirmTextEl.textContent = defaultConfirmText;
       openModal(form);
     });
   });
@@ -92,5 +98,101 @@ document.addEventListener('DOMContentLoaded', () => {
     const first = createForm.querySelector('input, textarea');
     if (first) first.focus();
   }
+
+  // Notebook preview popup
+  const nbOverlay = document.getElementById('nb-preview-modal');
+  const nbDismiss = nbOverlay?.querySelector('[data-dismiss-nb]');
+  const nbContent = document.getElementById('nb-preview-content');
+  const openNb = () => { nbOverlay?.classList.add('show'); nbOverlay?.setAttribute('aria-hidden', 'false'); };
+  const closeNb = () => { nbOverlay?.classList.remove('show'); nbOverlay?.setAttribute('aria-hidden', 'true'); };
+  nbDismiss?.addEventListener('click', closeNb);
+  nbOverlay?.addEventListener('click', (e) => { if (e.target === nbOverlay) closeNb(); });
+
+  document.addEventListener('click', async (e) => {
+    // Delete notebook via small X (with confirm modal)
+    const nbClose = e.target.closest?.('.nb-close');
+    if (nbClose) {
+      const wrapper = nbClose.closest('.nb-item');
+      const form = wrapper?.querySelector('.nb-delete-form');
+      const nameEl = wrapper?.querySelector('.nb-pill');
+      const nbName = nameEl ? nameEl.textContent.trim() : '';
+      if (form) {
+        if (confirmTitleEl) confirmTitleEl.textContent = 'Not defteri silinsin mi?';
+        if (confirmTextEl) confirmTextEl.textContent = `Bu işlem geri alınamaz. "${nbName}" ve içindeki tüm notlar kalıcı olarak silinecek.`;
+        openModal(form); // reuse confirm modal
+      }
+      return;
+    }
+
+    const bookBtn = e.target.closest?.('.nb-book');
+    if (bookBtn) {
+      const nbId = bookBtn.getAttribute('data-nb-id');
+      openNb();
+      nbContent.innerHTML = '<div class="loading">Yükleniyor...</div>';
+      try {
+        const res = await fetch(`/notebook/${nbId}`);
+        const html = await res.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const grid = doc.querySelector('.grid');
+        if (grid) {
+          nbContent.innerHTML = '';
+          nbContent.appendChild(grid);
+        } else {
+          nbContent.innerHTML = '<p class="error">Notlar yüklenemedi.</p>';
+        }
+      } catch (err) {
+        nbContent.innerHTML = `<p class="error">Bağlantı hatası: ${err.message}</p>`;
+      }
+    }
+  });
+
+  // Edit note modal: open on card click, auto-save on close/outside
+  const editOverlay = document.getElementById('edit-modal');
+  const editDismiss = editOverlay?.querySelector('[data-dismiss-edit]');
+  const editForm = document.getElementById('edit-form');
+  const editTitleInput = document.getElementById('edit-title-input');
+  const editContentInput = document.getElementById('edit-content-input');
+  const editNotebookSelect = document.getElementById('edit-notebook-select');
+  let currentEditNoteId = null;
+
+  const openEdit = (noteId, title, content, notebookId) => {
+    currentEditNoteId = noteId;
+    editForm.action = `/notes/${noteId}/update`;
+    editTitleInput.value = title || '';
+    editContentInput.value = content || '';
+    if (editNotebookSelect) {
+      editNotebookSelect.value = notebookId || '';
+    }
+    editOverlay?.classList.add('show');
+    editOverlay?.setAttribute('aria-hidden', 'false');
+  };
+  const closeEdit = () => {
+    if (currentEditNoteId) {
+      // Auto-save if changes present
+      if (editForm) {
+        const formData = new FormData(editForm);
+        fetch(editForm.action, { method: 'POST', body: formData });
+      }
+    }
+    editOverlay?.classList.remove('show');
+    editOverlay?.setAttribute('aria-hidden', 'true');
+    currentEditNoteId = null;
+  };
+  editDismiss?.addEventListener('click', closeEdit);
+  editOverlay?.addEventListener('click', (e) => { if (e.target === editOverlay) closeEdit(); });
+
+  // Delegate click on note cards to open editor (avoid clicks on buttons/forms)
+  document.addEventListener('click', (e) => {
+    const card = e.target.closest?.('.note-card');
+    if (!card) return;
+    const clickedAction = e.target.closest?.('.card-actions, form, button, a');
+    if (clickedAction) return; // don't open edit when interacting with actions
+    const noteId = card.getAttribute('data-note-id');
+    const title = card.getAttribute('data-title');
+    const content = card.getAttribute('data-content');
+    const nbId = card.getAttribute('data-notebook-id');
+    openEdit(noteId, title, content, nbId);
+  });
 });
 

@@ -32,38 +32,75 @@
             <div class="banner-content">
                 <h2>Notlarını Düzenle, Özetle ve Odaklan</h2>
                 <p>Hızlı not al, not defterleriyle düzenle ve tek tıkla yapay zekâ özeti oluştur.</p>
+                <div class="banner-features">
+                    <div class="card feature-card">
+                        <h3>⚡ Hızlı Not Alma</h3>
+                        <p>Başlık ve içerik ile saniyeler içinde not oluşturun.</p>
+                    </div>
+                    <div class="card feature-card">
+                        <h3>📁 Not Defterleri</h3>
+                        <p>Notlarınızı defterlere ayırın ve düzenli kalın.</p>
+                    </div>
+                    <div class="card feature-card">
+                        <h3>📌 Önemli Notları Sabitle</h3>
+                        <p>Önemli notları en üstte tutarak hızlı erişin.</p>
+                    </div>
+                    <div class="card feature-card">
+                        <h3>🤖 Tek Tıkla Özet</h3>
+                        <p>Gemini ile 100 kelimeye kadar akıllı özetler alın.</p>
+                    </div>
+                </div>
             </div>
             <div class="banner-illustration" aria-hidden="true">🗒️✨</div>
         </section>
 
-        <!-- Notebooks section -->
+        <!-- Notebooks, then Bookshelf below it, then Create Note in original place -->
         {% if session.username %}
-        <div class="create-card" style="margin-bottom:20px;">
-            <h3>Not Defterleri</h3>
-            <div style="margin-bottom:10px;">
+        <section class="tri-grid">
+        <div class="create-card notebooks-card tri-notebooks">
+            <h3>📁 Not Defterleri</h3>
+            <div class="nb-list">
                 {% if notebooks and notebooks|length > 0 %}
                     {% for nb in notebooks %}
-                        <a href="/notebook/{{ nb[0] }}" style="margin-right:10px;">📁 {{ nb[1] }}</a>
-                        <form method="POST" action="/notebooks/{{ nb[0] }}/delete" style="display:inline;">
-                            <button type="submit">Sil</button>
-                        </form>
-                        <br>
+                        <span class="nb-item">
+                            <a href="/notebook/{{ nb[0] }}" class="nb-pill">{{ nb[1] }}</a>
+                            <button type="button" class="nb-close" title="Sil">×</button>
+                            <form method="POST" action="/notebooks/{{ nb[0] }}/delete" class="nb-delete-form" style="display:none;">
+                                <button type="submit">delete</button>
+                            </form>
+                        </span>
                     {% endfor %}
-                    <a href="/">Tüm notlar</a>
                 {% else %}
                     <em>Henüz not defteri yok.</em>
                 {% endif %}
             </div>
-            <form method="POST" action="/notebooks">
+            <form method="POST" action="/notebooks" class="nb-add">
                 <input type="text" name="name" placeholder="Yeni not defteri adı" required>
                 <button type="submit">Ekle</button>
             </form>
         </div>
-        {% endif %}
+        
+        <div class="create-card bookshelf-card tri-bookshelf">
+            <h3>📚 Kütüphane</h3>
+            <div class="shelf">
+                <div class="shelf-row">
+                    {% for nb in notebooks %}
+                    {% if loop.index0 % 2 == 0 %}
+                    <button type="button" class="nb-book" data-nb-id="{{ nb[0] }}" title="{{ nb[1] }}">{{ nb[1] }}</button>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="shelf-row">
+                    {% for nb in notebooks %}
+                    {% if loop.index0 % 2 == 1 %}
+                    <button type="button" class="nb-book" data-nb-id="{{ nb[0] }}" title="{{ nb[1] }}">{{ nb[1] }}</button>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
 
-        <!-- Create card -->
-        {% if session.username %}
-        <div class="create-card">
+        <div class="create-card tri-newnote">
             <h3>Yeni Not</h3>
             <form method="POST" action="/notes">
                 <input type="text" name="title" placeholder="Başlık" required>
@@ -83,21 +120,23 @@
                 <button type="submit">Kaydet</button>
             </form>
         </div>
+        </section>
         {% else %}
         <p>Not eklemek için <a href="/login">giriş yapın</a> veya <a href="/register">kayıt olun</a>.</p>
         {% endif %}
 
-        <!-- Bento Layout for Featured Notes -->
+        <h2 style="margin-top: 12px;">Tüm notlar - istediğiniz notu düzenlemek için üstüne tıklayın</h2>
+        <!-- Bento Layout for All Notes (featured + grid) -->
         {% if notes and notes|length > 0 %}
         <section class="bento-grid">
-            <div class="bento-left card">
+            <div class="bento-left card note-card" data-note-id="{{ notes[0][0] }}" data-title="{{ notes[0][1] }}" data-content="{{ notes[0][2] | e }}" data-notebook-id="{{ notes[0][5] if notes[0][5] else '' }}">
                 {% set featured = notes[0] %}
                 <h3>📝 {% if featured[4] %}📌 {% endif %}{{ featured[1] }}</h3>
-                <p>{{ featured[2]|truncate(120, True, '…') }}</p>
+                <p>{{ featured[2] }}</p>
                 <small>{{ featured[3] }}{% if featured[6] %} · 📁 {{ featured[6] }}{% endif %}</small>
                 {% if session.username %}
                 <div class="card-actions">
-                    <button type="button" class="btn btn-primary summarize-btn" data-note-id="{{ featured[0] }}">Özetle</button>
+                    <button type="button" class="btn btn-ai summarize-btn" data-note-id="{{ featured[0] }}">🤖 Özetle</button>
                     <form method="POST" action="/notes/{{ featured[0] }}/pin">
                         <button type="submit">{% if featured[4] %}Kaldır{% else %}Sabitle{% endif %}</button>
                     </form>
@@ -108,92 +147,31 @@
                 {% endif %}
             </div>
             <div class="bento-right">
-                {% if notes|length > 1 %}
-                {% set right1 = notes[1] %}
-                <div class="card">
-                    <h3>📝 {% if right1[4] %}📌 {% endif %}{{ right1[1] }}</h3>
-                    <p>{{ right1[2]|truncate(80, True, '…') }}</p>
-                    <small>{{ right1[3] }}{% if right1[6] %} · 📁 {{ right1[6] }}{% endif %}</small>
-                </div>
-                {% endif %}
-                {% if notes|length > 2 %}
-                {% set right2 = notes[2] %}
-                <div class="card">
-                    <h3>📝 {% if right2[4] %}📌 {% endif %}{{ right2[1] }}</h3>
-                    <p>{{ right2[2]|truncate(80, True, '…') }}</p>
-                    <small>{{ right2[3] }}{% if right2[6] %} · 📁 {{ right2[6] }}{% endif %}</small>
-                </div>
-                {% endif %}
-            </div>
-        </section>
-        {% endif %}
-
-        <!-- Feature Showcase (Product features) -->
-        <section class="feature-showcase">
-            <div class="card feature-card">
-                <h3>⚡ Hızlı Not Alma</h3>
-                <p>Başlık ve içerik ile saniyeler içinde not oluşturun.</p>
-            </div>
-            <div class="card feature-card">
-                <h3>📁 Not Defterleri</h3>
-                <p>Notlarınızı defterlere ayırın ve düzenli kalın.</p>
-            </div>
-            <div class="card feature-card">
-                <h3>📌 Önemli Notları Sabitle</h3>
-                <p>Önemli notları en üstte tutarak hızlı erişin.</p>
-            </div>
-            <div class="card feature-card">
-                <h3>🤖 Tek Tıkla Özet</h3>
-                <p>Gemini ile 100 kelimeye kadar akıllı özetler alın.</p>
-            </div>
-        </section>
-
-        <!-- Notes Grid -->
-        <h2>Notlar</h2>
-        {% if notes %}
-        {% set remaining = notes[3:] if notes|length > 3 else notes %}
-        {% else %}
-        {% set remaining = [] %}
-        {% endif %}
-        <div class="grid">
-            {% for note in remaining %}
-            <div class="card">
-                <h3>
-                    📝 {% if note[4] %}📌 {% endif %}{{ note[1] }}
-                </h3>
-                <p>{{ note[2]|truncate(40, True, '…') }}</p>
-                <small>{{ note[3] }}{% if note[6] %} · 📁 {{ note[6] }}{% endif %}</small>
-                {% if session.username %}
-                <div class="card-actions">
-                    <button type="button" class="btn btn-primary summarize-btn" data-note-id="{{ note[0] }}">Özetle</button>
-                    <form method="POST" action="/notes/{{ note[0] }}/pin">
-                        <button type="submit">{% if note[4] %}Kaldır{% else %}Sabitle{% endif %}</button>
-                    </form>
-                    <form method="POST" action="/notes/{{ note[0] }}/delete">
-                        <button type="submit">Sil</button>
-                    </form>
-                </div>
-                <form method="POST" action="/notes/{{ note[0] }}/update" style="margin-top:8px;">
-                    <input type="text" name="title" value="{{ note[1] }}" required>
-                    <br><br>
-                    <textarea name="content" required>{{ note[2] }}</textarea>
-                    <br>
-                    {% if notebooks and notebooks|length > 0 %}
-                    <label for="notebook_id_{{ note[0] }}">Not defteri:</label>
-                    <select name="notebook_id" id="notebook_id_{{ note[0] }}">
-                        <option value="">(Seçilmedi)</option>
-                        {% for nb in notebooks %}
-                            <option value="{{ nb[0] }}" {% if note[5] == nb[0] %}selected{% endif %}>{{ nb[1] }}</option>
-                        {% endfor %}
-                    </select>
-                    <br><br>
+                {% for note in notes[1:] %}
+                <div class="card note-card" data-note-id="{{ note[0] }}" data-title="{{ note[1] }}" data-content="{{ note[2] | e }}" data-notebook-id="{{ note[5] if note[5] else '' }}">
+                    <h3>📝 {% if note[4] %}📌 {% endif %}{{ note[1] }}</h3>
+                    <p>{{ note[2]|truncate(80, True, '…') }}</p>
+                    <small>{{ note[3] }}{% if note[6] %} · 📁 {{ note[6] }}{% endif %}</small>
+                    {% if session.username %}
+                    <div class="card-actions">
+                        <button type="button" class="btn btn-ai summarize-btn" data-note-id="{{ note[0] }}">🤖 Özetle</button>
+                        <form method="POST" action="/notes/{{ note[0] }}/pin">
+                            <button type="submit">{% if note[4] %}Kaldır{% else %}Sabitle{% endif %}</button>
+                        </form>
+                        <form method="POST" action="/notes/{{ note[0] }}/delete">
+                            <button type="submit">Sil</button>
+                        </form>
+                    </div>
                     {% endif %}
-                    <button type="submit">Güncelle</button>
-                </form>
-                {% endif %}
+                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
-        </div>
+        </section>
+        {% endif %}
+
+        
+
+        
     </div>
     <!-- Confirm Modal -->
     <div id="confirm-modal" class="modal-overlay" aria-hidden="true">
@@ -217,6 +195,46 @@
             <div class="row">
                 <button type="button" class="btn btn-secondary" data-dismiss-summary>Kapat</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Notebook Preview Modal -->
+    <div id="nb-preview-modal" class="modal-overlay" aria-hidden="true">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="nb-preview-title">
+            <h4 id="nb-preview-title">Not Defteri</h4>
+            <div id="nb-preview-content">
+                <div class="loading">Yükleniyor...</div>
+            </div>
+            <div class="row">
+                <button type="button" class="btn btn-secondary" data-dismiss-nb>Kapat</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Note Modal -->
+    <div id="edit-modal" class="modal-overlay" aria-hidden="true">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="edit-title">
+            <h4 id="edit-title">Notu Düzenle</h4>
+            <form id="edit-form" method="POST">
+                <input type="text" name="title" id="edit-title-input" required>
+                <br><br>
+                <textarea name="content" id="edit-content-input" required></textarea>
+                <br>
+                {% if notebooks and notebooks|length > 0 %}
+                <label for="edit-notebook-select">Not defteri:</label>
+                <select name="notebook_id" id="edit-notebook-select">
+                    <option value="">(Seçilmedi)</option>
+                    {% for nb in notebooks %}
+                        <option value="{{ nb[0] }}">{{ nb[1] }}</option>
+                    {% endfor %}
+                </select>
+                <br><br>
+                {% endif %}
+                <div class="row" style="justify-content: space-between;">
+                    <button type="button" class="btn btn-secondary" data-dismiss-edit>Kapat</button>
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                </div>
+            </form>
         </div>
     </div>
 
