@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <title>Notes App</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
@@ -23,6 +26,15 @@
                 {% endif %}
             </div>
         </div>
+
+        <!-- Banner / Hero -->
+        <section class="banner">
+            <div class="banner-content">
+                <h2>Notlarını Düzenle, Özetle ve Odaklan</h2>
+                <p>Hızlı not al, not defterleriyle düzenle ve tek tıkla yapay zekâ özeti oluştur.</p>
+            </div>
+            <div class="banner-illustration" aria-hidden="true">🗒️✨</div>
+        </section>
 
         <!-- Notebooks section -->
         {% if session.username %}
@@ -52,6 +64,7 @@
         <!-- Create card -->
         {% if session.username %}
         <div class="create-card">
+            <h3>Yeni Not</h3>
             <form method="POST" action="/notes">
                 <input type="text" name="title" placeholder="Başlık" required>
                 <br><br>
@@ -74,16 +87,81 @@
         <p>Not eklemek için <a href="/login">giriş yapın</a> veya <a href="/register">kayıt olun</a>.</p>
         {% endif %}
 
+        <!-- Bento Layout for Featured Notes -->
+        {% if notes and notes|length > 0 %}
+        <section class="bento-grid">
+            <div class="bento-left card">
+                {% set featured = notes[0] %}
+                <h3>📝 {% if featured[4] %}📌 {% endif %}{{ featured[1] }}</h3>
+                <p>{{ featured[2]|truncate(120, True, '…') }}</p>
+                <small>{{ featured[3] }}{% if featured[6] %} · 📁 {{ featured[6] }}{% endif %}</small>
+                {% if session.username %}
+                <div class="card-actions">
+                    <button type="button" class="btn btn-primary summarize-btn" data-note-id="{{ featured[0] }}">Özetle</button>
+                    <form method="POST" action="/notes/{{ featured[0] }}/pin">
+                        <button type="submit">{% if featured[4] %}Kaldır{% else %}Sabitle{% endif %}</button>
+                    </form>
+                    <form method="POST" action="/notes/{{ featured[0] }}/delete">
+                        <button type="submit">Sil</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+            <div class="bento-right">
+                {% if notes|length > 1 %}
+                {% set right1 = notes[1] %}
+                <div class="card">
+                    <h3>📝 {% if right1[4] %}📌 {% endif %}{{ right1[1] }}</h3>
+                    <p>{{ right1[2]|truncate(80, True, '…') }}</p>
+                    <small>{{ right1[3] }}{% if right1[6] %} · 📁 {{ right1[6] }}{% endif %}</small>
+                </div>
+                {% endif %}
+                {% if notes|length > 2 %}
+                {% set right2 = notes[2] %}
+                <div class="card">
+                    <h3>📝 {% if right2[4] %}📌 {% endif %}{{ right2[1] }}</h3>
+                    <p>{{ right2[2]|truncate(80, True, '…') }}</p>
+                    <small>{{ right2[3] }}{% if right2[6] %} · 📁 {{ right2[6] }}{% endif %}</small>
+                </div>
+                {% endif %}
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Feature Showcase (Product features) -->
+        <section class="feature-showcase">
+            <div class="card feature-card">
+                <h3>⚡ Hızlı Not Alma</h3>
+                <p>Başlık ve içerik ile saniyeler içinde not oluşturun.</p>
+            </div>
+            <div class="card feature-card">
+                <h3>📁 Not Defterleri</h3>
+                <p>Notlarınızı defterlere ayırın ve düzenli kalın.</p>
+            </div>
+            <div class="card feature-card">
+                <h3>📌 Önemli Notları Sabitle</h3>
+                <p>Önemli notları en üstte tutarak hızlı erişin.</p>
+            </div>
+            <div class="card feature-card">
+                <h3>🤖 Tek Tıkla Özet</h3>
+                <p>Gemini ile 100 kelimeye kadar akıllı özetler alın.</p>
+            </div>
+        </section>
+
         <!-- Notes Grid -->
         <h2>Notlar</h2>
+        {% if notes %}
+        {% set remaining = notes[3:] if notes|length > 3 else notes %}
+        {% else %}
+        {% set remaining = [] %}
+        {% endif %}
         <div class="grid">
-            {% for note in notes %}
+            {% for note in remaining %}
             <div class="card">
                 <h3>
-                    {% if note[4] %}📌 {% endif %}
-                    {{ note[1] }}
+                    📝 {% if note[4] %}📌 {% endif %}{{ note[1] }}
                 </h3>
-                <p>{{ note[2] }}</p>
+                <p>{{ note[2]|truncate(40, True, '…') }}</p>
                 <small>{{ note[3] }}{% if note[6] %} · 📁 {{ note[6] }}{% endif %}</small>
                 {% if session.username %}
                 <div class="card-actions">
