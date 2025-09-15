@@ -29,6 +29,51 @@ document.addEventListener('DOMContentLoaded', () => {
     closeModal();
   });
 
+  // Summary modal
+  const summaryOverlay = document.getElementById('summary-modal');
+  const btnDismissSummary = summaryOverlay?.querySelector('[data-dismiss-summary]');
+  const summaryContent = document.getElementById('summary-content');
+
+  const openSummaryModal = () => {
+    summaryOverlay?.classList.add('show');
+    summaryOverlay?.setAttribute('aria-hidden', 'false');
+  };
+  const closeSummaryModal = () => {
+    summaryOverlay?.classList.remove('show');
+    summaryOverlay?.setAttribute('aria-hidden', 'true');
+  };
+
+  btnDismissSummary?.addEventListener('click', closeSummaryModal);
+  summaryOverlay?.addEventListener('click', (e) => { if (e.target === summaryOverlay) closeSummaryModal(); });
+
+  // Handle summarize button clicks
+  document.addEventListener('click', async (e) => {
+    if (e.target.classList.contains('summarize-btn')) {
+      const noteId = e.target.getAttribute('data-note-id');
+      openSummaryModal();
+      summaryContent.innerHTML = '<div class="loading">Özet oluşturuluyor...</div>';
+      
+      try {
+        const response = await fetch(`/notes/${noteId}/summarize`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          summaryContent.innerHTML = `<p>${data.summary}</p>`;
+        } else {
+          summaryContent.innerHTML = `<p class="error">Hata: ${data.error}</p>`;
+        }
+      } catch (error) {
+        summaryContent.innerHTML = `<p class="error">Bağlantı hatası: ${error.message}</p>`;
+      }
+    }
+  });
+
   // Auto-resize textareas
   const autoResize = (ta) => {
     ta.style.height = 'auto';

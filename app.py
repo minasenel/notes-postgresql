@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, redirect, session
+from flask import Flask, render_template, request, redirect, session, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 import psycopg2
 import psycopg2.errors #burada psycopg2.errors modülünü import ediyoruz.
 import os
 from dotenv import load_dotenv
+from ai_service import summarize_note
 
 # Environment variables'ları yükle
 load_dotenv()
@@ -149,6 +150,21 @@ def delete_notebook(notebook_id: int):
     cur.execute("DELETE FROM notebooks WHERE id = %s AND user_id = %s", (notebook_id, session["user_id"]))
     conn.commit()
     return redirect("/")
+
+@app.post("/notes/<int:note_id>/summarize")
+def summarize_note_route(note_id: int):
+    if "user_id" not in session:
+        return jsonify({"error": "Not logged in"}), 401
+    
+    # Get note content
+    cur.execute("SELECT content FROM notes WHERE id = %s AND user_id = %s", (note_id, session["user_id"]))
+    note = cur.fetchone()
+    if not note:
+        return jsonify({"error": "Note not found"}), 404
+    
+    # Generate summary
+    summary = summarize_note(note[0])
+    return jsonify({"summary": summary})
 
 @app.route("/register", methods=["GET", "POST"]) #burada register fonksiyonu oluşturuldu.
 def register():

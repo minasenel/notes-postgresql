@@ -134,3 +134,20 @@ body {
 .btn-secondary { background: #e5e7eb; color: #111; }
 .btn-primary { background: #1f3158; color: #fff; }
 
+/* Summary modal specific styles */
+.loading {
+  text-align: center;
+  padding: 20px;
+  font-style: italic;
+  color: #666;
+}
+.error {
+  color: #dc2626;
+  font-weight: 500;
+}
+#summary-content p {
+  margin: 0;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+

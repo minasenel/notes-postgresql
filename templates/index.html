@@ -87,6 +87,7 @@
                 <small>{{ note[3] }}{% if note[6] %} · 📁 {{ note[6] }}{% endif %}</small>
                 {% if session.username %}
                 <div class="card-actions">
+                    <button type="button" class="btn btn-primary summarize-btn" data-note-id="{{ note[0] }}">Özetle</button>
                     <form method="POST" action="/notes/{{ note[0] }}/pin">
                         <button type="submit">{% if note[4] %}Kaldır{% else %}Sabitle{% endif %}</button>
                     </form>
@@ -124,6 +125,19 @@
             <div class="row">
                 <button type="button" class="btn btn-secondary" data-dismiss>Vazgeç</button>
                 <button type="button" class="btn btn-primary" data-confirm>Sil</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Modal -->
+    <div id="summary-modal" class="modal-overlay" aria-hidden="true">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="summary-title">
+            <h4 id="summary-title">Not Özeti</h4>
+            <div id="summary-content">
+                <div class="loading">Özet oluşturuluyor...</div>
+            </div>
+            <div class="row">
+                <button type="button" class="btn btn-secondary" data-dismiss-summary>Kapat</button>
             </div>
         </div>
     </div>
