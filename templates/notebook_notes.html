@@ -39,14 +39,38 @@
         <div class="grid">
             {% for note in notes %}
             <div class="card">
-                <h3>{{ note[1] }}</h3>
+                <h3>
+                    {% if note[4] %}📌 {% endif %}
+                    {{ note[1] }}
+                </h3>
                 <p>{{ note[2] }}</p>
                 <small>{{ note[3] }}</small>
                 <div class="card-actions">
+                    <button type="button" class="btn btn-primary summarize-btn" data-note-id="{{ note[0] }}">Özetle</button>
+                    <form method="POST" action="/notes/{{ note[0] }}/pin">
+                        <button type="submit">{% if note[4] %}Kaldır{% else %}Sabitle{% endif %}</button>
+                    </form>
                     <form method="POST" action="/notes/{{ note[0] }}/delete">
                         <button type="submit">Sil</button>
                     </form>
                 </div>
+                <form method="POST" action="/notes/{{ note[0] }}/update" style="margin-top:8px;">
+                    <input type="text" name="title" value="{{ note[1] }}" required>
+                    <br><br>
+                    <textarea name="content" required>{{ note[2] }}</textarea>
+                    <br>
+                    {% if notebooks and notebooks|length > 0 %}
+                    <label for="notebook_id_{{ note[0] }}">Not defteri:</label>
+                    <select name="notebook_id" id="notebook_id_{{ note[0] }}">
+                        <option value="">(Seçilmedi)</option>
+                        {% for nb in notebooks %}
+                            <option value="{{ nb[0] }}" {% if note[5] == nb[0] %}selected{% endif %}>{{ nb[1] }}</option>
+                        {% endfor %}
+                    </select>
+                    <br><br>
+                    {% endif %}
+                    <button type="submit">Güncelle</button>
+                </form>
             </div>
             {% else %}
             <p>Bu not defterinde henüz not yok.</p>
@@ -54,18 +78,32 @@
         </div>
     </div>
 
-    <script src="/static/script.js"></script>
-    <!-- Reuse the confirm modal scaffold in case we add actions later -->
+    <!-- Confirm Modal -->
     <div id="confirm-modal" class="modal-overlay" aria-hidden="true">
         <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
-            <h4 id="confirm-title">Onay</h4>
-            <p>Bu işlemi onaylıyor musunuz?</p>
+            <h4 id="confirm-title">Silinsin mi?</h4>
+            <p>Bu işlemi geri alamazsınız.</p>
             <div class="row">
                 <button type="button" class="btn btn-secondary" data-dismiss>Vazgeç</button>
-                <button type="button" class="btn btn-primary" data-confirm>Onayla</button>
+                <button type="button" class="btn btn-primary" data-confirm>Sil</button>
             </div>
         </div>
     </div>
+
+    <!-- Summary Modal -->
+    <div id="summary-modal" class="modal-overlay" aria-hidden="true">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="summary-title">
+            <h4 id="summary-title">Not Özeti</h4>
+            <div id="summary-content">
+                <div class="loading">Özet oluşturuluyor...</div>
+            </div>
+            <div class="row">
+                <button type="button" class="btn btn-secondary" data-dismiss-summary>Kapat</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
 </body>
 </html>
 
