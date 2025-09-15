@@ -30,11 +30,19 @@ body {
   margin: 0;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', Arial, sans-serif;
   line-height: 1.5;
-  background: var(--bg-primary);
+  /* Glassmorphism background */
+  background-color: #0c152e;
+  background-image:
+    radial-gradient(at 47% 33%, hsl(27.93, 54%, 13%) 0, transparent 59%),
+    radial-gradient(at 82% 65%, hsl(26.54, 64%, 48%) 0, transparent 55%);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   color: var(--text-primary);
 }
 @media (prefers-color-scheme: dark) {
-  body { background: #0f1115; color: #eaeaea; }
+  body { color: #eaeaea; }
   :root {
     --bg-primary: #0f1115;
     --bg-surface: #161a22;
@@ -64,8 +72,11 @@ body {
   grid-template-columns: 1fr auto;
   align-items: center;
   gap: 16px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-color);
+  /* Glassmorphism card effect (banner) */
+  backdrop-filter: blur(22px) saturate(151%);
+  -webkit-backdrop-filter: blur(22px) saturate(151%);
+  background-color: rgba(3, 7, 24, 0.43);
+  border: 1px solid rgba(255, 255, 255, 0.125);
   border-radius: 12px;
   padding: 16px;
   box-shadow: 0 1px 2px var(--shadow-color);
@@ -98,12 +109,23 @@ body {
 
 /* Create form */
 .create-card {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
+  /* Glassmorphism card effect */
+  backdrop-filter: blur(22px) saturate(151%);
+  -webkit-backdrop-filter: blur(22px) saturate(151%);
+  background-color: rgba(9, 22, 56, 0.34);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.125);
   padding: 16px;
   box-shadow: 0 1px 2px var(--shadow-color);
   margin-bottom: 16px;
+}
+/* Ensure glass effect also on specific homepage cards */
+.notebooks-card, .bookshelf-card, .tri-newnote {
+  backdrop-filter: blur(22px) saturate(151%);
+  -webkit-backdrop-filter: blur(22px) saturate(151%);
+  background-color: rgba(9, 22, 56, 0.34);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.125);
 }
 .two-up { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; margin-bottom: 16px; }
 @media (max-width: 900px) { .two-up { grid-template-columns: 1fr; } }
@@ -112,8 +134,27 @@ body {
 .notebooks-card h3 { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; }
 .nb-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
 .nb-item { display: inline-flex; align-items: center; gap: 6px; }
-.nb-pill { display: inline-block; padding: 6px 10px; border-radius: 9999px; background: var(--blue-50); color: var(--blue-900); text-decoration: none; border: 1px solid var(--blue-200); }
-.nb-pill:hover { background: var(--blue-100); }
+.nb-pill {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 9999px;
+  /* Glassmorphism pill */
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  background: rgba(239, 246, 255, 0.25); /* blue-50 with transparency */
+  color: var(--blue-900);
+  text-decoration: none;
+  border: 1px solid rgba(191, 219, 254, 0.55); /* blue-200 */
+}
+.nb-pill:hover { background: rgba(239, 246, 255, 0.38); }
+@media (prefers-color-scheme: dark) {
+  .nb-pill {
+    background: rgba(30, 58, 138, 0.25); /* blue-800 tint */
+    color: #e5edff;
+    border-color: rgba(147, 197, 253, 0.5); /* blue-300 */
+  }
+  .nb-pill:hover { background: rgba(30, 58, 138, 0.35); }
+}
 .nb-close { width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; border-radius: 9999px; border: 1px solid var(--red-400); background: var(--red-50); color: var(--red-600); cursor: pointer; font-weight: 600; line-height: 1; }
 .nb-close:hover { background: var(--red-100); }
 .nb-add { display: flex; gap: 8px; align-items: center; }
@@ -160,7 +201,7 @@ body {
   .tri-notebooks, .tri-bookshelf, .tri-newnote { grid-column: auto; grid-row: auto; }
 }
 @media (prefers-color-scheme: dark) {
-  .create-card { background: var(--bg-surface); border-color: var(--border-color); }
+  .create-card { background-color: rgba(9, 22, 56, 0.34); border-color: rgba(255, 255, 255, 0.125); }
 }
 .create-card input, .create-card textarea {
   width: 100%;
@@ -179,6 +220,29 @@ body {
   background: var(--brand);
   color: var(--brand-contrast);
   cursor: pointer;
+}
+
+/* Blue glassmorphism buttons for specific top cards */
+.notebooks-card button,
+.bookshelf-card button,
+.tri-newnote button {
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  background: rgba(96,165,250,0.22); /* #60a5fa at low opacity */
+  color: #eaf2ff;
+  border: 1px solid rgba(96,165,250,0.45);
+}
+.notebooks-card button:hover,
+.bookshelf-card button:hover,
+.tri-newnote button:hover { background: rgba(96,165,250,0.3); }
+@media (prefers-color-scheme: dark) {
+  .notebooks-card button,
+  .bookshelf-card button,
+  .tri-newnote button {
+    background: rgba(96,165,250,0.18);
+    color: #fff;
+    border-color: rgba(96,165,250,0.5);
+  }
 }
 
 /* Notes grid */
@@ -218,14 +282,17 @@ body {
 .feature-card p { margin: 0; color: var(--text-secondary); }
 
 .card { /*burada card stilini ayarlıyoruz.*/
-  background: var(--bg-surface);
-  border: 1px solid var(--border-color);
+  /* Glassmorphism card effect */
+  backdrop-filter: blur(22px) saturate(151%);
+  -webkit-backdrop-filter: blur(22px) saturate(151%);
+  background-color: rgba(9, 22, 56, 0.34);
   border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.125);
   padding: 14px;
   box-shadow: 0 1px 2px var(--shadow-color);
 }
 @media (prefers-color-scheme: dark) { /*burada dark mode için stil ayarları yapıyoruz.*/
-  .card { background: var(--bg-surface); border-color: var(--border-color); }
+  .card { background-color: rgba(9, 22, 56, 0.34); border-color: rgba(255, 255, 255, 0.125); }
 }
 .card h3 { margin: 0 0 8px; font-size: 18px; }
 .card p { margin: 0; white-space: pre-wrap; }
@@ -265,10 +332,13 @@ body {
 }
 .modal-overlay.show { display: flex; }
 .modal {
-  background: var(--bg-surface);
+  /* Glassmorphism card effect */
+  backdrop-filter: blur(22px) saturate(151%);
+  -webkit-backdrop-filter: blur(22px) saturate(151%);
+  background-color: rgba(9, 22, 56, 0.34);
   color: var(--text-primary);
   border-radius: 12px;
-  border: 1px solid var(--border-color);
+  border: 1px solid rgba(255, 255, 255, 0.125);
   width: 90%;
   max-width: 640px;
   padding: 16px;
@@ -318,6 +388,22 @@ body {
 }
 @media (prefers-color-scheme: dark) {
   .btn-ai { background: linear-gradient(135deg, var(--orange-500), var(--orange-300)); color: #111; border-color: var(--orange-500); }
+}
+
+/* Orange gradient halo ONLY on borders of the first three banner feature cards */
+.banner-features .feature-card:nth-child(-n+3) { position: relative; z-index: 0; }
+.banner-features .feature-card:nth-child(-n+3)::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  padding: 2px; /* border thickness */
+  background: linear-gradient(135deg, var(--orange-600), var(--orange-300));
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
 }
 
 /* Gradient ring around the AI feature card in banner (last card) */

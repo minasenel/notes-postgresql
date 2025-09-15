@@ -78,7 +78,7 @@ def create_note():
     conn.commit()
     return redirect("/")
 
-@app.post("/notes/<int:note_id>/delete")
+@app.post("/notes/<int:note_id>/delete") #notu silme
 def delete_note(note_id: int):
     if "user_id" not in session:
         return redirect("/login")
@@ -86,7 +86,7 @@ def delete_note(note_id: int):
     conn.commit()
     return redirect("/")
 
-@app.post("/notes/<int:note_id>/update")
+@app.post("/notes/<int:note_id>/update") #notu güncelleme
 def update_note(note_id: int):
     if "user_id" not in session:
         return redirect("/login")
