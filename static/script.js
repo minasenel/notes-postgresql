@@ -56,8 +56,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Handle summarize button clicks : bura summarize button'a tıklandığında notları özetlemek için kullanılır.
   document.addEventListener('click', async (e) => {
-    if (e.target.classList.contains('summarize-btn')) {
-      const noteId = e.target.getAttribute('data-note-id');
+    const summarizeBtn = e.target.closest?.('.summarize-btn');
+    if (summarizeBtn) {
+      const noteId = summarizeBtn.getAttribute('data-note-id');
       openSummaryModal();
       summaryContent.innerHTML = '<div class="loading">Özet oluşturuluyor...</div>';
       
@@ -72,7 +73,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = await response.json();
         
         if (response.ok) { //burada summary modalının içeriğini görüntülemek için kullanılır.
-          summaryContent.innerHTML = `<p>${data.summary}</p>`;
+          // Use textContent to avoid injecting HTML
+          summaryContent.textContent = data.summary;
         } else {
           summaryContent.innerHTML = `<p class="error">Hata: ${data.error}</p>`;
         }
@@ -87,8 +89,9 @@ document.addEventListener('DOMContentLoaded', () => {
     ta.style.height = 'auto';
     ta.style.height = ta.scrollHeight + 'px';
   };
+  const isVisible = (el) => !!(el.offsetParent || el.getClientRects().length);
   document.querySelectorAll('textarea').forEach((ta) => {
-    autoResize(ta);
+    if (isVisible(ta)) autoResize(ta);
     ta.addEventListener('input', () => autoResize(ta));
   });
 
@@ -187,6 +190,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     editOverlay?.classList.add('show');
     editOverlay?.setAttribute('aria-hidden', 'false');
+    // Ensure textarea height fits content when modal becomes visible
+    if (typeof autoResize === 'function') {
+      requestAnimationFrame(() => autoResize(editContentInput));
+    }
   };
   const closeEdit = () => {
     if (currentEditNoteId) {
