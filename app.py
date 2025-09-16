@@ -20,7 +20,7 @@ conn = psycopg2.connect(
     user=os.getenv("DB_USER", "myuser"),
     password=os.getenv("DB_PASSWORD"),
     host=os.getenv("DB_HOST", "localhost"),
-    port=os.getenv("DB_PORT", "5432")
+    port=os.getenv("DB_PORT", "5432") 
 )
 cur = conn.cursor()
 
@@ -142,7 +142,7 @@ def create_notebook():
     conn.commit()
     return redirect("/")
 
-@app.post("/notebooks/<int:notebook_id>/delete")
+@app.post("/notebooks/<int:notebook_id>/delete") #not defteri silme
 def delete_notebook(notebook_id: int):
     if "user_id" not in session:
         return redirect("/login")
@@ -189,17 +189,17 @@ def register():
 
 @app.route("/login", methods=["GET", "POST"]) #burada login fonksiyonu oluşturuldu.
 def login():
-    if request.method == "POST":
+    if request.method == "POST": 
         username = request.form["username"]
         password = request.form["password"]
 
-        # kullanıcıyı getir
+        # kullanıcıyı getir 
         cur.execute("SELECT id, password_hash FROM users WHERE username = %s", (username,))
         row = cur.fetchone()
         if not row:
             return "Invalid username or password", 400
 
-        user_id, password_hash = row
+        user_id, password_hash = row #burada user_id ve password_hash değerlerini alıyoruz.
         if not check_password_hash(password_hash, password):
             return "Invalid username or password", 400
 
@@ -210,9 +210,9 @@ def login():
     return render_template("login.html")
 
 @app.post("/logout") #burada logout fonksiyonu oluşturuldu.
-def logout():
-    session.clear()
-    return redirect("/login")
+def logout(): 
+    session.clear() 
+    return redirect("/login") #burada login sayfasına yönlendiriliyor.
 
 if __name__ == "__main__": #burada app.run fonksiyonu çalıştırılıyor.
     app.run(debug=True)

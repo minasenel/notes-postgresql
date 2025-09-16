@@ -73,8 +73,9 @@ body {
   align-items: center;
   gap: 16px;
   /* Glassmorphism card effect (banner) */
-  backdrop-filter: blur(22px) saturate(151%);
-  -webkit-backdrop-filter: blur(22px) saturate(151%);
+  position: relative;
+  backdrop-filter: blur(22px) saturate(1.5);
+  -webkit-backdrop-filter: blur(22px) saturate(1.5);
   background-color: rgba(3, 7, 24, 0.43);
   border: 1px solid rgba(255, 255, 255, 0.125);
   border-radius: 12px;
@@ -110,8 +111,9 @@ body {
 /* Create form */
 .create-card {
   /* Glassmorphism card effect */
-  backdrop-filter: blur(22px) saturate(151%);
-  -webkit-backdrop-filter: blur(22px) saturate(151%);
+  position: relative;
+  backdrop-filter: blur(22px) saturate(1.5);
+  -webkit-backdrop-filter: blur(22px) saturate(1.5);
   background-color: rgba(9, 22, 56, 0.34);
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.125);
@@ -121,8 +123,9 @@ body {
 }
 /* Ensure glass effect also on specific homepage cards */
 .notebooks-card, .bookshelf-card, .tri-newnote {
-  backdrop-filter: blur(22px) saturate(151%);
-  -webkit-backdrop-filter: blur(22px) saturate(151%);
+  position: relative;
+  backdrop-filter: blur(22px) saturate(1.5);
+  -webkit-backdrop-filter: blur(22px) saturate(1.5);
   background-color: rgba(9, 22, 56, 0.34);
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.125);
@@ -139,8 +142,8 @@ body {
   padding: 6px 10px;
   border-radius: 9999px;
   /* Glassmorphism pill */
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  backdrop-filter: blur(14px) saturate(1.4);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
   background: rgba(239, 246, 255, 0.25); /* blue-50 with transparency */
   color: var(--blue-900);
   text-decoration: none;
@@ -226,8 +229,8 @@ body {
 .notebooks-card button,
 .bookshelf-card button,
 .tri-newnote button {
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  backdrop-filter: blur(14px) saturate(1.4);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
   background: rgba(96,165,250,0.22); /* #60a5fa at low opacity */
   color: #eaf2ff;
   border: 1px solid rgba(96,165,250,0.45);
@@ -283,8 +286,9 @@ body {
 
 .card { /*burada card stilini ayarlıyoruz.*/
   /* Glassmorphism card effect */
-  backdrop-filter: blur(22px) saturate(151%);
-  -webkit-backdrop-filter: blur(22px) saturate(151%);
+  position: relative;
+  backdrop-filter: blur(22px) saturate(1.5);
+  -webkit-backdrop-filter: blur(22px) saturate(1.5);
   background-color: rgba(9, 22, 56, 0.34);
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.125);
@@ -333,8 +337,9 @@ body {
 .modal-overlay.show { display: flex; }
 .modal {
   /* Glassmorphism card effect */
-  backdrop-filter: blur(22px) saturate(151%);
-  -webkit-backdrop-filter: blur(22px) saturate(151%);
+  position: relative;
+  backdrop-filter: blur(22px) saturate(1.5);
+  -webkit-backdrop-filter: blur(22px) saturate(1.5);
   background-color: rgba(9, 22, 56, 0.34);
   color: var(--text-primary);
   border-radius: 12px;
