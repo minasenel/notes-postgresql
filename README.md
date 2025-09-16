@@ -1,22 +1,22 @@
 # Notes Project
-
+This is an AI integrated note taking application that provides you a short brief for each note, saving time by improving readibility when improvising notes. 
 Flask + PostgreSQL notes application with notebooks, pinning, and AI-powered summarization. Modern UI uses a semantic color system, Inter font, and an accessible modal system.
 
 ## Features
 
 - Notes CRUD: create, preview, pin/unpin, delete
-- Notebooks: organize notes, bookshelf UI with two scrollable shelves
-- Bento notes layout: latest note is emphasized; others shown in uniform cards
-- Edit modal: click any note to edit in a popup; auto-saves on close/outside click
 - AI Summarization: per-note “🤖 Özetle” using Google Gemini (1.5 Flash)
+- Notebooks: organize notes, bookshelf UI with two scrollable shelves
+- notes layout: latest note is emphasized; others shown in uniform cards
+- Edit modal: click any note to edit in a popup; auto-saves on close/outside click
 - Confirm modals: delete confirmations, including a detailed notebook delete warning
-- Theming: light/dark via prefers-color-scheme, semantic CSS variables, Inter font
+- Theming: Modern glassmorphism style with Warm and Cold tones brought together, CSS variables, Inter font
 - Accessibility: keyboard focus styles, readable contrasts
 
 ## Demo (local)
 
-- Homepage: banner with features, notebooks + bookshelf, create note, bento notes
-- Notebook preview: click “books” in the bookshelf to preview notes in a modal
+- Homepage: banner with features, notebooks + bookshelf, create note
+- Notebook preview: click “notebooks” in the bookshelf to preview notes in a modal
 - Edit: click any note to open the edit popup; saves automatically on dismiss
 
 ## Setup
@@ -101,12 +101,12 @@ notes_project/
 ├── app.py              # Flask routes (auth, notes CRUD, notebooks, summarize)
 ├── ai_service.py       # Gemini API integration (summarize_note)
 ├── requirements.txt    # Python dependencies
-├── .env                # Environment variables (not tracked)
+├── .env                # Environment variables (make sure not tracked)
 ├── static/
 │   ├── style.css       # Color system, layout, components, modals
 │   └── script.js       # Modals, autosize, summarize, edit popup, bookshelf
 └── templates/
-    ├── index.html      # Homepage (banner, notebooks, bookshelf, bento notes)
+    ├── index.html      # Homepage (banner, notebooks, bookshelf, layout notes)
     ├── login.html      # Auth
     ├── register.html   # Auth
     └── notebook_notes.html # Per-notebook view
