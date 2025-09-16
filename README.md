@@ -1,6 +1,6 @@
 # Notes Project
 
-Flask + PostgreSQL notes application with notebooks, pinning, and AI-powered summarization. Modern UI uses a semantic color system, dark mode, Inter font, and an accessible modal system.
+Flask + PostgreSQL notes application with notebooks, pinning, and AI-powered summarization. Modern UI uses a semantic color system, Inter font, and an accessible modal system.
 
 ## Features
 
@@ -59,27 +59,31 @@ Flask + PostgreSQL notes application with notebooks, pinning, and AI-powered sum
    -- Users
    CREATE TABLE users (
      id SERIAL PRIMARY KEY,
-     username VARCHAR(255) UNIQUE NOT NULL,
+     username VARCHAR(50) UNIQUE NOT NULL,
      password_hash TEXT NOT NULL
    );
 
    -- Notebooks
    CREATE TABLE notebooks (
      id SERIAL PRIMARY KEY,
-     name VARCHAR(255) NOT NULL,
+     name VARCHAR(120) NOT NULL,
      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE
    );
 
    -- Notes
    CREATE TABLE notes (
      id SERIAL PRIMARY KEY,
-     title VARCHAR(255) NOT NULL,
-     content TEXT NOT NULL,
+     title VARCHAR(100),
+     content TEXT,
      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-     pinned BOOLEAN DEFAULT FALSE,
      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+     pinned BOOLEAN DEFAULT FALSE,
      notebook_id INTEGER REFERENCES notebooks(id) ON DELETE SET NULL
    );
+
+   -- Indexes for better performance
+   CREATE INDEX idx_notebooks_user_id_name ON notebooks(user_id, name);
+   CREATE INDEX idx_notes_notebook_id ON notes(notebook_id);
    ```
 
 6. Run
