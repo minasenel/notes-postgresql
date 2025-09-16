@@ -51,7 +51,7 @@
                     </div>
                 </div>
             </div>
-            <div class="banner-illustration" aria-hidden="true">🗒️✨</div>
+            <div class="banner-illustration" aria-hidden="true"></div>
         </section>
 
         <!-- Notebooks, then Bookshelf below it, then Create Note in original place -->
@@ -133,7 +133,7 @@
                 {% set featured = notes[0] %}
                 <h3>📝 {% if featured[4] %}📌 {% endif %}{{ featured[1] }}</h3>
                 <p>{{ featured[2] }}</p>
-                <small>{{ featured[3] }}{% if featured[6] %} · 📁 {{ featured[6] }}{% endif %}</small>
+                <small>{{ featured[3].strftime('%Y-%m-%d %H:%M') }}{% if featured[6] %} · 📁 {{ featured[6] }}{% endif %}</small>
                 {% if session.username %}
                 <div class="card-actions">
                     <button type="button" class="btn btn-ai summarize-btn" data-note-id="{{ featured[0] }}">🤖 Özetle</button>
@@ -151,7 +151,7 @@
                 <div class="card note-card" data-note-id="{{ note[0] }}" data-title="{{ note[1] }}" data-content="{{ note[2] | e }}" data-notebook-id="{{ note[5] if note[5] else '' }}">
                     <h3>📝 {% if note[4] %}📌 {% endif %}{{ note[1] }}</h3>
                     <p>{{ note[2]|truncate(80, True, '…') }}</p>
-                    <small>{{ note[3] }}{% if note[6] %} · 📁 {{ note[6] }}{% endif %}</small>
+                    <small>{{ note[3].strftime('%Y-%m-%d %H:%M') }}{% if note[6] %} · 📁 {{ note[6] }}{% endif %}</small>
                     {% if session.username %}
                     <div class="card-actions">
                         <button type="button" class="btn btn-ai summarize-btn" data-note-id="{{ note[0] }}">🤖 Özetle</button>
