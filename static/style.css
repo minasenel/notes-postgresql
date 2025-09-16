@@ -225,6 +225,21 @@ body {
   cursor: pointer;
 }
 
+/* Enhanced textarea wrapper */
+.textarea-wrap { position: relative; }
+.textarea-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 6px;
+}
+.textarea-counter {
+  font-variant-numeric: tabular-nums;
+}
+.textarea-hint { opacity: 0.8; }
+
 /* Blue glassmorphism buttons for specific top cards */
 .notebooks-card button,
 .bookshelf-card button,

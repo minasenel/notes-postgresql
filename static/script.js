@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
   btnDismissSummary?.addEventListener('click', closeSummaryModal);
   summaryOverlay?.addEventListener('click', (e) => { if (e.target === summaryOverlay) closeSummaryModal(); });
 
-  // Handle summarize button clicks : burada summarize button'a tıklandığında notları özetlemek için kullanılır.
+  // Handle summarize button clicks : bura summarize button'a tıklandığında notları özetlemek için kullanılır.
   document.addEventListener('click', async (e) => {
     if (e.target.classList.contains('summarize-btn')) {
       const noteId = e.target.getAttribute('data-note-id');
@@ -92,7 +92,28 @@ document.addEventListener('DOMContentLoaded', () => {
     ta.addEventListener('input', () => autoResize(ta));
   });
 
-  // Autofocus first input in create form : burada create form'a odaklanmak için kullanılır.
+  // Textarea character counter + Cmd/Ctrl+Enter submit
+  const counters = document.querySelectorAll('.textarea-counter');
+  counters.forEach((el) => {
+    const forId = el.getAttribute('data-for');
+    const ta = document.getElementById(forId);
+    if (!ta) return;
+    const max = parseInt(ta.getAttribute('maxlength') || '0', 10);
+    const update = () => {
+      const len = ta.value.length;
+      el.textContent = max ? `${len}/${max}` : `${len}`;
+    };
+    update();
+    ta.addEventListener('input', update);
+    ta.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        const form = ta.closest('form');
+        if (form) form.submit();
+      }
+    });
+  });
+
+  // Autofocus first input in create form 
   const createForm = document.querySelector('.create-card form');
   if (createForm) {
     const first = createForm.querySelector('input, textarea');
@@ -109,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
   nbOverlay?.addEventListener('click', (e) => { if (e.target === nbOverlay) closeNb(); });
 
   document.addEventListener('click', async (e) => {
-    // Delete notebook via small X (with confirm modal)
+    // Delete notebook via small X button (with confirm modal)
     const nbClose = e.target.closest?.('.nb-close');
     if (nbClose) {
       const wrapper = nbClose.closest('.nb-item');
@@ -169,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   const closeEdit = () => {
     if (currentEditNoteId) {
-      // Auto-save if changes present
+      // Auto-save present changes
       if (editForm) {
         const formData = new FormData(editForm);
         fetch(editForm.action, { method: 'POST', body: formData });

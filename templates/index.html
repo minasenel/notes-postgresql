@@ -105,7 +105,13 @@
             <form method="POST" action="/notes">
                 <input type="text" name="title" placeholder="Başlık" required>
                 <br><br>
-                <textarea name="content" placeholder="İçerik" required></textarea>
+                <div class="textarea-wrap">
+                    <textarea name="content" id="new-note-content" placeholder="İçerik" maxlength="4000" required></textarea>
+                    <div class="textarea-footer">
+                        <span class="textarea-hint">Kaydetmek için ⌘/Ctrl + Enter</span>
+                        <span class="textarea-counter" data-for="new-note-content">0/4000</span>
+                    </div>
+                </div>
                 <br>
                 {% if notebooks and notebooks|length > 0 %}
                 <label for="notebook_id">Not defteri:</label>
