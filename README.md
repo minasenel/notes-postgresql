@@ -1,6 +1,9 @@
 # Notes Project
-This is an AI integrated note taking application that provides you a short brief for each note, saving time by improving readibility when improvising notes. 
-Flask + PostgreSQL notes application with notebooks, pinning, and AI-powered summarization. Modern UI uses a semantic color system, Inter font, and an accessible modal system.
+
+This is an AI-integrated note-taking application that automatically generates concise summaries for each note, improving readability and saving time.
+Built with Flask and PostgreSQL, it supports features like notebooks, pinning, and AI-powered summarization. The modern UI incorporates a semantic color system, the Inter font, and an accessible modal design.
+
+In a professional setting, the application is particularly valuable during office or online meetings, where discussions are often dense and time-sensitive. By turning long notes into clear, actionable briefs, it ensures that key decisions and insights are never lost. This not only streamlines collaboration but also helps professionals stay focused, organized, and impactful in their career growth.
 
 ## Features
 
